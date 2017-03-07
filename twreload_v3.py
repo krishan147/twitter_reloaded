@@ -19,7 +19,7 @@ time_start = datetime.datetime.now()
 scope = ['https://spreadsheets.google.com/feeds']
 credentials = ServiceAccountCredentials.from_json_keyfile_name('ENTER PROJECT NAME HERE', scope)
 gc = gspread.authorize(credentials)
-wks = gc.open("BRPMEN_Bingboard").sheet1
+wks = gc.open("ENTER GOOGLE SHEET NAME").sheet1
 wks.update_acell('A11', 'Running...')
 wks.update_acell('B12', 'Will populate when process is finished')
 wks.update_acell('B13', 'Will populate when process is finished')
@@ -27,7 +27,6 @@ wks.update_acell('B14', 'Will populate when process is finished')
 wks.update_acell('B15', 'Will populate when process is finished')
 wks.update_acell('B16', 'Will populate when process is finished')
 wks.update_acell('B17', 'Will populate when process is finished')
-
 wks.update_acell('D11', '')
 wks.update_acell('E11', '')
 
@@ -39,7 +38,7 @@ address_book_table = 'BRPMEN_AddressBookSocialProfiles'
 
 ### GET TOTAL NUMBER OF TWEETS ON THE SYSTEM BEFORE THE PROCESS BEGAN
 
-amvbbdo_brpmen = 'DRIVER={SQL Server};SERVER=ENTER SERVER NAME;DATABASE=ENTER DATABASE NAME;UID=ENTER USER ID;PWD=ENTER PASSWORD'
+brpmen = 'DRIVER={SQL Server};SERVER=ENTER SERVER NAME;DATABASE=ENTER DATABASE NAME;UID=ENTER USER ID;PWD=ENTER PASSWORD'
 table_name_total = "BRPMEN_Posts"
 cnxn = pyodbc.connect(amvbbdo_brpmen)
 cursor = cnxn.cursor()
@@ -80,9 +79,9 @@ with open("twitter_database_of_twitter_ids.txt", "a") as database_of_tweet_ids_a
 
 
 # SELECT ALL TWITTER HANDLES TO GRAB POSTS FROM
+
 cursor.execute("select matchKey, country, location, venue_name, uniqueid from "+address_book_table+" WHERE platform LIKE 'tw' ORDER BY last_checked ASC")
 
-#cursor.execute("select matchKey, country, location, venue_name, uniqueid from "+address_book_table+" WHERE platform LIKE 'tw' AND last_checked is not null AND location LIKE 'New York City' ORDER BY last_checked ASC") # Update Twitter handles which have not been updated for a while
 num_of_new_tweets = 0
 rows = cursor.fetchall()
 cnxn.close()
@@ -95,11 +94,8 @@ for item in rows: # ANALYSE EACH HANDLE ONE AT A TIME
         country = item[1]
         city = item[2]
         name = item[3]
-
         print twitter_handle
-
         ms_sql_time = datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S')      
-
         time_now = datetime.datetime.now()
         convert_time_now = str(time_now).split(".",1)[0]
         time_now_unix = time.mktime(datetime.datetime.strptime(convert_time_now, "%Y-%m-%d %H:%M:%S").timetuple())
@@ -177,6 +173,7 @@ for item in rows: # ANALYSE EACH HANDLE ONE AT A TIME
             #sys.exit()
                         
         # SET LAST CHECKED DATE IN SQL ADDRESS BOOK
+        
         cnxn = pyodbc.connect(database_details)
         cursor = cnxn.cursor()
         print ms_sql_time, BRPMEN_AddressBookSocialProfiles_uniqueId
